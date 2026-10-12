@@ -43,7 +43,7 @@ SPAM_POST = re.compile(r"spam|abuse|hijack|enforcement|site reputation", re.I)
 BLOG_INDEX = re.compile(
     r'href="(/search/blog/(\d{4})/(\d{2})/[^"#]+)"[^>]*class="devsite-nav-title"'
     r'[^>]*>\s*<span class="devsite-nav-text" tooltip>([^<]+)</span>', re.S)
-POST_DATE = re.compile(r"^([A-Z][a-z]+ \d{1,2}, \d{4})$", re.M)
+POST_DATE = re.compile(r"^(?:[A-Z][a-z]+day,\s+)?([A-Z][a-z]+ \d{1,2}, \d{4})$", re.M)
 JUNK = re.compile(r"^(Home|Search Central|Documentation|Send feedback|Previous|Next"
                   r"|Was this helpful\??|Last updated .*)$", re.I)
 BLOCK = re.compile(r"</?(p|li|h[1-6]|tr|dt|dd|blockquote|pre|ul|ol|table|div)\b[^>]*>", re.I)
