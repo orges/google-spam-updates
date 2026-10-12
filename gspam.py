@@ -169,16 +169,22 @@ def load_state(path):
 WRAP = 100
 
 
-def wrap_diff(dd, width=WRAP):
-    """Hard-wrap long diff lines to fit a code box; wrapped tails become context lines."""
+def wrap_block(body, width=WRAP):
+    """Hard-wrap long fenced lines to fit a code box; tails keep the leading marker.
+
+    Lines that do not start with a +/-/space marker are wrapped flush left.
+    """
     out = []
-    for line in dd.splitlines():
+    for line in body.splitlines():
         if len(line) <= width or line.startswith(("@@", "--- ", "+++ ")):
             out.append(line)
             continue
-        chunks = textwrap.wrap(line[1:], width=width - 3) or [""]
-        out.append(line[:1] + chunks[0])
-        out += ["   " + c for c in chunks[1:]]
+        if line[0] in "+- ":
+            chunks = textwrap.wrap(line[1:], width=width - 3) or [""]
+            out.append(line[:1] + chunks[0])
+            out += ["   " + c for c in chunks[1:]]
+        else:
+            out += textwrap.wrap(line, width=width) or [""]
     return "\n".join(out)
 
 
@@ -189,9 +195,8 @@ def entry_md(title, sources, sections):
         out += ["Sources:"] + ["- " + s for s in sources] + [""]
     for head, lang, body in sections:
         if body.strip():
-            if lang == "diff":
-                body = wrap_diff(body)
-            out += ["## " + head, "", "```" + lang, body.rstrip("\n"), "```", ""]
+            out += ["## " + head, "", "```" + lang,
+                    wrap_block(body).rstrip("\n"), "```", ""]
     return "\n".join(out) + "\n"
 
 

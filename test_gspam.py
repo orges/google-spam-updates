@@ -4,7 +4,7 @@ import subprocess
 import tempfile
 
 from gspam import (append, changes, diff, doc_diff, entry_md, entries, index_md, message,
-                   publish, render, wrap_diff)
+                   publish, render, wrap_block)
 
 SNAP = {
     "abc": {
@@ -52,12 +52,18 @@ md = entry_md("2026-09-24", ["https://x"], [("T", "diff", "-a\n+b"), ("skip", "d
 assert md.startswith("# 2026-09-24\n") and "```diff\n-a\n+b\n```" in md and "skip" not in md
 
 LONG = "- " + " ".join(["spamword"] * 40)
-w = wrap_diff(LONG)
+w = wrap_block(LONG)
 assert max(len(ln) for ln in w.split("\n")) <= 100, max(len(ln) for ln in w.split("\n"))
 assert w.startswith("- ") and "\n   " in w            # marker kept, tails indented
 assert " ".join(w.split()) == LONG                     # no words lost or added
-assert wrap_diff("@@ -1,2 +1,2 @@\n- ok") == "@@ -1,2 +1,2 @@\n- ok"   # headers untouched
-assert wrap_diff("+ " + "x " * 80).split("\n")[0].startswith("+ ")
+assert wrap_block("@@ -1,2 +1,2 @@\n- ok") == "@@ -1,2 +1,2 @@\n- ok"   # headers untouched
+assert wrap_block("+ " + "x " * 80).split("\n")[0].startswith("+ ")
+# announcement text: no marker, wraps flush left, still fits
+t = wrap_block("Released the update, which applies globally. " * 6)
+assert max(len(ln) for ln in t.split("\n")) <= 100 and all(not ln[0].isspace() for ln in t.split("\n"))
+assert "Released the update" in t
+assert t.split() == ("Released the update, which applies globally. " * 6).split()  # nothing lost
+assert wrap_block("word " * 300) == wrap_block("word " * 300)          # deterministic
 
 e = entries(changes({}, SNAP), "", doc_date=None)
 key = "2026-09-24"
