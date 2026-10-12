@@ -2,15 +2,49 @@
 
 One file per day, oldest first. Backfilled from archive.org, kept current by the scheduled run.
 
+- [2007-03-01](2007-03-01.md) — An update on spam reporting
+- [2007-09-01](2007-09-01.md) — How we use spam reports
+- [2007-11-01](2007-11-01.md) — Simplified Chinese blog: Tips for reducing comment spam
+- [2008-07-01](2008-07-01.md) — Using data to fight webspam; Matt Cutts on ranking, spam and the future of search
+- [2008-09-01](2008-09-01.md) — Keeping comment spam off your site and away from users
+- [2009-01-01](2009-01-01.md) — Open redirect URLs: Is your site being abused?; An update on the spam report; Webspam in 2009
+- [2009-04-01](2009-04-01.md) — The Webspam team's plans for 2009
+- [2009-06-01](2009-06-01.md) — Spam2.0: Fake user accounts and spam profiles
+- [2009-11-01](2009-11-01.md) — Hard facts about comment spam; Matt Cutts Video: What can I do if a competitor is spamming?
+- [2010-01-01](2010-01-01.md) — Protect your site from spammers with reCAPTCHA; Matt Cutts video: How are spam reports prioritized?
+- [2010-03-01](2010-03-01.md) — Is your site hacked?  New Message Center notifications for hacking and abuse
+- [2010-05-01](2010-05-01.md) — Call for webspam reports in Thai, Indonesian, Romanian, Czech and Farsi
+- [2010-11-01](2010-11-01.md) — A Chrome extension for reporting webspam; How to help Google identify web spam
+- [2011-02-01](2011-02-01.md) — Google Search and search engine spam
+- [2011-08-01](2011-08-01.md) — A new, improved form for reporting webspam; Matt Cutts video: Can I flag spammy links to my site that I didn't create?
+- [2011-11-01](2011-11-01.md) — Is SEO Spam?; Matt Cutts video: Search Engine Optimization (SEO) and Spam
+- [2013-08-01](2013-08-01.md) — View manual webspam actions in Webmaster Tools
+- [2015-10-01](2015-10-01.md) — An update on how we tackle hacked spam
+- [2016-05-01](2016-05-01.md) — How we fought webspam in 2015
+- [2017-01-01](2017-01-01.md) — Protect your site from user generated spam
+- [2017-04-01](2017-04-01.md) — How we fought webspam - Webspam Report 2016
+- [2018-06-01](2018-06-01.md) — How we fought webspam - Webspam Report 2017
+- [2019-03-01](2019-03-01.md) — This year in Search Spam - Webspam report 2018
+- [2020-06-01](2020-06-01.md) — How we fought Search spam on Google - Webspam Report 2019
+- [2020-07-01](2020-07-01.md) — How spam reports are used at Google
+- [2021-04-01](2021-04-01.md) — How we fought Search spam on Google in 2020
+- [2021-05-01](2021-05-01.md) — Prevent portions of your site from being abused by spam; How we worked with you in 2020 towards a safe search experience, without spam
+- [2021-07-01](2021-07-01.md) — A reminder on qualifying links and our link spam update
+- [2022-04-01](2022-04-01.md) — How we fought Search spam on Google in 2021
 - [2022-11-29](2022-11-29.md) — Text diff: 20221028 -> 20221129
+- [2022-12-01](2022-12-01.md) — December 2022 link spam update releasing for Google Search
 - [2023-02-28](2023-02-28.md) — Text diff: 20230130 -> 20230228
+- [2023-04-01](2023-04-01.md) — How we fought spam on Google Search in 2022
 - [2023-09-28](2023-09-28.md) — Text diff: 20230828 -> 20230928
+- [2023-10-01](2023-10-01.md) — October 2023 Spam Update
 - [2023-12-26](2023-12-26.md) — Text diff: 20231129 -> 20231226
 - [2024-01-30](2024-01-30.md) — Text diff: 20231226 -> 20240130
+- [2024-03-01](2024-03-01.md) — What web creators should know about our March 2024 core update and new spam policies
 - [2024-03-31](2024-03-31.md) — Text diff: 20240229 -> 20240331
 - [2024-06-30](2024-06-30.md) — Text diff: 20240531 -> 20240630
 - [2024-08-31](2024-08-31.md) — Text diff: 20240723 -> 20240831
 - [2024-09-28](2024-09-28.md) — Text diff: 20240831 -> 20240928
+- [2024-11-01](2024-11-01.md) — Updating our site reputation abuse policy
 - [2024-11-28](2024-11-28.md) — Text diff: 20241017 -> 20241128
 - [2024-12-28](2024-12-28.md) — Text diff: 20241128 -> 20241228
 - [2025-01-30](2025-01-30.md) — Text diff: 20241228 -> 20250130
@@ -20,9 +54,11 @@ One file per day, oldest first. Backfilled from archive.org, kept current by the
 - [2025-10-31](2025-10-31.md) — Text diff: 20250924 -> 20251031
 - [2025-12-28](2025-12-28.md) — Text diff: 20251130 -> 20251228
 - [2026-03-24](2026-03-24.md) — March 2026 spam update
+- [2026-04-13](2026-04-13.md) — Introducing a new spam policy for "back button hijacking"
 - [2026-04-30](2026-04-30.md) — Text diff: 20260327 -> 20260430
 - [2026-05-30](2026-05-30.md) — Text diff: 20260430 -> 20260530
 - [2026-06-24](2026-06-24.md) — June 2026 spam update
+- [2026-08-01](2026-08-01.md) — Update to the Site Reputation Policy
 - [2026-08-18](2026-08-18.md) — August 2026 spam update
 - [2026-08-30](2026-08-30.md) — Text diff: 20260822 -> 20260830
 - [2026-09-24](2026-09-24.md) — September 2026 spam update

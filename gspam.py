@@ -15,6 +15,7 @@ State: one JSON snapshot (default ~/.local/state/gspam.json).
 import argparse
 import difflib
 import gzip
+import html
 import json
 import os
 import re
@@ -35,6 +36,14 @@ DEFAULT_STATE = os.environ.get(
 )
 DEFAULT_ROOT = os.path.dirname(os.path.abspath(__file__))
 SPAM = re.compile(r"spam", re.I)
+SITE = "https://developers.google.com"
+BLOG = SITE + "/search/blog"
+# slug-only matching is too loose (shipping "policies", "return policies")
+SPAM_POST = re.compile(r"spam|abuse|hijack|enforcement|site reputation", re.I)
+BLOG_INDEX = re.compile(
+    r'href="(/search/blog/(\d{4})/(\d{2})/[^"#]+)"[^>]*class="devsite-nav-title"'
+    r'[^>]*>\s*<span class="devsite-nav-text" tooltip>([^<]+)</span>', re.S)
+POST_DATE = re.compile(r"^([A-Z][a-z]+ \d{1,2}, \d{4})$", re.M)
 JUNK = re.compile(r"^(Home|Search Central|Documentation|Send feedback|Previous|Next"
                   r"|Was this helpful\??|Last updated .*)$", re.I)
 BLOCK = re.compile(r"</?(p|li|h[1-6]|tr|dt|dd|blockquote|pre|ul|ol|table|div)\b[^>]*>", re.I)
@@ -135,6 +144,33 @@ def fetch():
     return seen
 
 
+def blog_index():
+    """{post path: (title, YYYY-MM)} for spam-related Search Central blog posts."""
+    out = {}
+    for path, year, month, title in BLOG_INDEX.findall(get(BLOG)):
+        title = html.unescape(title).strip()
+        if SPAM_POST.search(title):
+            out[path] = (title, "{}-{}".format(year, month))
+    return out
+
+
+def post_change(path, meta):
+    """Fetch a blog post and shape it like any other change."""
+    title, month = meta
+    body = doc_text(SITE + path)
+    match = POST_DATE.search(body)
+    date = month + "-01"
+    if match:
+        try:
+            date = time.strftime("%Y-%m-%d", time.strptime(match.group(1), "%B %d, %Y"))
+        except ValueError:
+            pass
+    text = "\n".join(ln for ln in body.split("\n")
+                     if not ln.startswith("## ")
+                     and ln not in (match.group(1) if match else date, "Google Search Central Blog"))
+    return {"date": date, "kind": "post", "desc": title, "url": SITE + path, "text": text.strip()}
+
+
 def changes(old, new):
     """Structured list of everything in `new` that `old` didn't have."""
     out = []
@@ -159,6 +195,8 @@ def fmt(c):
         return "NEW  {}  ({})".format(c["desc"], c["date"])
     if c["kind"] == "done":
         return "DONE  {}: {}".format(c["desc"], c["text"])
+    if c["kind"] == "post":
+        return "POST  {}  ({})".format(c["desc"], c["date"])
     return "UPDATE  {}: {}".format(c["desc"], c["text"])
 
 
@@ -261,7 +299,13 @@ def message(chs, dd):
     parts = []
     if chs:
         new = [c["desc"] for c in chs if c["kind"] == "new"]
-        parts.append(new[0] if new else "rollout update")
+        posts = sum(1 for c in chs if c["kind"] == "post")
+        if new:
+            parts.append(new[0])
+        elif not posts:
+            parts.append("rollout update")
+        if posts:
+            parts.append("{} blog post(s)".format(posts))
     if dd:
         parts.append("spam policies +{}/-{}".format(
             *[sum(1 for ln in dd.splitlines() if ln.startswith(s) and not ln.startswith(s * 3))
@@ -389,6 +433,10 @@ def run(args):
     old = load_state(args.state)
     seen = {"incidents": fetch(), "doc": doc_text()}
     chs = changes(old.get("incidents", {}), seen["incidents"])
+    posts = blog_index()
+    fresh = sorted(p for p in posts if p not in old.get("posts", {}))
+    chs += [post_change(p, posts[p]) for p in fresh]
+    seen["posts"] = {p: posts[p][1] for p in posts}
     dd = doc_diff(old["doc"], seen["doc"]) if "doc" in old else ""
     lines = [fmt(c) for c in chs]
 
@@ -396,8 +444,8 @@ def run(args):
         print(json.dumps({"changes": lines, "doc_diff": dd}, indent=2))
     else:
         if not old:
-            print("gspam: snapshot created ({} known spam updates, {} doc paragraphs)"
-                  .format(len(seen["incidents"]), seen["doc"].count("\n") + 1))
+            print("gspam: snapshot created ({} spam updates, {} blog posts, {} doc paragraphs)"
+                  .format(len(seen["incidents"]), len(seen["posts"]), seen["doc"].count("\n") + 1))
         if lines:
             print("\n".join(lines))
         if dd:

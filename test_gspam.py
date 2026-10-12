@@ -3,7 +3,7 @@ import os
 import subprocess
 import tempfile
 
-from gspam import (append, changes, diff, doc_diff, entry_md, entries, index_md, message,
+from gspam import (append, changes, diff, doc_diff, entry_md, entries, fmt, index_md, message,
                    publish, render, wrap_block)
 
 SNAP = {
@@ -54,6 +54,14 @@ assert message([], doc_diff("a", "b")) == "gspam: spam policies +1/-1"
 
 md = entry_md("2026-09-24", ["https://x"], [("T", "diff", "-a\n+b"), ("skip", "diff", "  ")])
 assert md.startswith("# 2026-09-24\n") and "```diff\n-a\n+b\n```" in md and "skip" not in md
+
+POST = {"date": "2026-04-13", "kind": "post", "desc": "New spam policy",
+        "url": "https://developers.google.com/search/blog/2026/04/x", "text": "Body line."}
+pe = entries([POST], "")["2026-04-13"]
+assert "## New spam policy" in pe and "+ Body line." in pe
+assert "developers.google.com/search/blog/2026/04/x" in pe
+assert message([POST], "") == "gspam: 1 blog post(s)"
+assert diff({}, {}) == [] and fmt(POST) == "POST  New spam policy  (2026-04-13)"
 
 LONG = "- " + " ".join(["spamword"] * 40)
 w = wrap_block(LONG)
