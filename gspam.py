@@ -21,6 +21,7 @@ import re
 import subprocess
 import sys
 import time
+import urllib.error
 import urllib.parse
 import urllib.request
 import zlib
@@ -40,16 +41,47 @@ ENTITIES = {"&amp;": "&", "&nbsp;": " ", "&#39;": "'", "&quot;": '"',
             "&lt;": "<", "&gt;": ">", "&rsquo;": "'", "&hellip;": "..."}
 
 
-def get(url):
+def get(url, tries=5):
+    """Fetch a URL. archive.org throttles hard, so back off and retry on 5xx/timeouts."""
     req = urllib.request.Request(url, headers={"user-agent": "gspam/1"})
-    with urllib.request.urlopen(req, timeout=60) as resp:
-        raw = resp.read()
-        enc = resp.headers.get("Content-Encoding", "")
+    for attempt in range(tries):
+        try:
+            with urllib.request.urlopen(req, timeout=60) as resp:
+                raw = resp.read()
+                enc = resp.headers.get("Content-Encoding", "")
+            break
+        except urllib.error.HTTPError as exc:
+            if attempt == tries - 1 or exc.code not in (429, 500, 502, 503, 504):
+                raise
+            time.sleep(10 * (attempt + 1))
+        except (urllib.error.URLError, OSError):
+            # "Connection refused" is archive.org rate limiting us
+            if attempt == tries - 1:
+                raise
+            time.sleep(15 * (attempt + 1))
     if enc == "gzip":
         raw = gzip.decompress(raw)
     elif enc == "deflate":
         raw = zlib.decompress(raw, -zlib.MAX_WBITS)
     return raw.decode("utf-8", "replace")
+
+
+CACHE = os.path.join(os.path.expanduser("~/.cache"), "gspam")
+
+
+def cached_doc(url, key):
+    """Parse a doc URL, reusing the on-disk snapshot so re-runs cost no requests."""
+    path = os.path.join(CACHE, key + ".txt")
+    try:
+        with open(path) as fh:
+            return fh.read()
+    except OSError:
+        pass
+    text = doc_text(url)
+    os.makedirs(CACHE, exist_ok=True)
+    with open(path, "w") as fh:
+        fh.write(text)
+    return text
 
 
 def doc_text(url=DOC):
@@ -236,36 +268,76 @@ def backfill(months, root):
             break
     picks.reverse()
     print("backfill: {} archive snapshots, {} -> {}".format(
-        len(picks), picks[0][:8], picks[-1][:8]))
+        len(picks), picks[0][:8], picks[-1][:8]), flush=True)
 
-    files, prev, prev_ts = {}, None, None
+    missing = fetch_snapshots(picks, gap=2)
+    for attempt in range(2):          # archive.org throttles hard; cached hits are free
+        if not missing:
+            break
+        print("backfill: retrying {} after a pause".format(len(missing)), flush=True)
+        time.sleep(60 * (attempt + 1))
+        missing = fetch_snapshots(missing, gap=10)
+
+    entries_by_day, prev, prev_ts = {}, None, None
     for ts in picks:
-        url = "https://web.archive.org/web/{}id_/{}".format(ts, DOC)
         try:
-            text = doc_text(url)
-        except Exception as exc:
-            print("backfill: {} failed: {}".format(ts[:8], exc))
-            time.sleep(3)
+            text = cached_doc(archive_url(ts, raw=True), ts)
+        except OSError:
+            print("  {} never fetched, skipping".format(ts[:8]), flush=True)
+            prev = prev_ts = None
             continue
         if prev is not None and text != prev:
-            date = ts[:4] + "-" + ts[4:6] + "-" + ts[6:8]
+            date = "{}-{}-{}".format(ts[:4], ts[4:6], ts[6:8])
             dd = doc_diff(prev, text)
-            files.update(append(root, {date: entry_md(
-                date, [archive_url(prev_ts), archive_url(ts)],
-                [("Text diff: {} -> {}".format(prev_ts[:8], ts[:8]), "diff", dd)])}))
-            print("  {} +{}/-{}".format(date, *_counts(dd)))
+            md = entry_md(date, [archive_url(prev_ts), archive_url(ts)],
+                          [("Text diff: {} -> {}".format(prev_ts[:8], ts[:8]), "diff", dd)])
+            entries_by_day[date] = entries_by_day.get(date, "") + md
+            print("  {} +{}/-{}".format(date, *_counts(dd)), flush=True)
         prev, prev_ts = text, ts
-        time.sleep(1)
-    return files
+    return append(root, entries_by_day)
 
 
-def archive_url(ts):
-    return "https://web.archive.org/web/{}".format(ts)
+def fetch_snapshots(timestamps, gap):
+    """Download and cache each snapshot; returns the ones still unavailable."""
+    missing = []
+    for ts in timestamps:
+        try:
+            cached_doc(archive_url(ts, raw=True), ts)
+        except Exception as exc:
+            print("  {} failed: {}".format(ts[:8], exc), flush=True)
+            missing.append(ts)
+            continue
+        time.sleep(gap)
+    return missing
+
+
+def archive_url(ts, raw=False):
+    """Snapshot permalink; raw=True skips Wayback's HTML rewriter."""
+    return "https://web.archive.org/web/{}{}".format(ts, "id_/" + DOC if raw else "")
 
 
 def _counts(dd):
     return (sum(1 for ln in dd.splitlines() if ln.startswith("+") and not ln.startswith("+++")),
             sum(1 for ln in dd.splitlines() if ln.startswith("-") and not ln.startswith("---")))
+
+
+def index_md(root, extra):
+    """changelog/README.md: every entry on disk plus the ones about to be written."""
+    folder = os.path.join(root, "changelog")
+    days = {}
+    for name in os.listdir(folder) if os.path.isdir(folder) else []:
+        if name.endswith(".md") and name != "README.md":
+            with open(os.path.join(folder, name)) as fh:
+                days[name[:-3]] = fh.read()
+    days.update(extra)
+    out = ["# Spam changelog", "",
+           "One file per day, oldest first. Backfilled from archive.org, "
+           "kept current by the scheduled run.", ""]
+    for date in sorted(days):
+        titles = re.findall(r"^## (.+)$", days[date], re.M)
+        out.append("- [{}]({}.md) — {}".format(
+            date, date, "; ".join(dict.fromkeys(titles)) or "no content change"))
+    return "\n".join(out) + "\n"
 
 
 def run(args):
@@ -293,13 +365,17 @@ def run(args):
 
     if args.publish:
         files = render(seen)
-        files.update(append(args.publish, entries(chs, dd)))
+        ent = entries(chs, dd)
+        files.update(append(args.publish, ent))
+        files["changelog/README.md"] = index_md(args.publish, ent)
         touched = publish(args.publish, files, message(chs, dd))
         print("gspam: published {}".format(", ".join(sorted(touched)) or "nothing new"))
 
     if args.backfill:
         root = args.publish or DEFAULT_ROOT
-        touched = publish(root, backfill(args.backfill, root),
+        files = backfill(args.backfill, root)
+        files["changelog/README.md"] = index_md(root, {})
+        touched = publish(root, files,
                           "gspam: backfill {} months of spam policies from archive.org".format(args.backfill))
         print("gspam: backfilled {}".format(", ".join(sorted(touched)) or "nothing new"))
 

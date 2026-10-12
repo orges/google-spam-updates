@@ -3,7 +3,8 @@ import os
 import subprocess
 import tempfile
 
-from gspam import append, changes, diff, doc_diff, entry_md, entries, message, publish, render
+from gspam import (append, changes, diff, doc_diff, entry_md, entries, index_md, message,
+                   publish, render)
 
 SNAP = {
     "abc": {
@@ -53,6 +54,10 @@ assert md.startswith("# 2026-09-24\n") and "```diff\n-a\n+b\n```" in md and "ski
 e = entries(changes({}, SNAP), "", doc_date=None)
 key = "2026-09-24"
 assert e[key].startswith("# 2026-09-24") and "+ Released the update." in e[key]
+
+idx = index_md("/nonexistent", e)
+assert "- [2026-09-24](2026-09-24.md) — September 2026 spam update" in idx, idx
+assert index_md("/nonexistent", {}).count("- [") == 0
 same_day = entries(changes({}, SNAP) + [dict(changes({}, SNAP)[0], date="2026-10-08", kind="done",
                                              text="rollout finished 2026-10-08")], "", "2026-10-08")
 assert sorted(same_day) == ["2026-09-24", "2026-10-08"]   # two dates -> two files
