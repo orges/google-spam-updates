@@ -84,6 +84,8 @@ assert e[key].startswith("# 2026-09-24") and "+ Released the update." in e[key]
 idx = index_md("/nonexistent", e)
 assert "- [2026-09-24](2026-09-24.md) — September 2026 spam update" in idx, idx
 assert index_md("/nonexistent", {}).count("- [") == 0
+long_idx = index_md("/nonexistent", {"2026-01-01": "## " + "spamwords " * 20})
+assert all(len(ln) <= 100 for ln in long_idx.split("\n")), max(len(ln) for ln in long_idx.split("\n"))
 same_day = entries(changes({}, SNAP) + [dict(changes({}, SNAP)[0], date="2026-10-08", kind="done",
                                              text="rollout finished 2026-10-08")], "", "2026-10-08")
 assert sorted(same_day) == ["2026-09-24", "2026-10-08"]   # two dates -> two files

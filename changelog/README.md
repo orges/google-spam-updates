@@ -16,14 +16,18 @@ One file per day, oldest first. Backfilled from archive.org, kept current by the
 - [2009-11-26](2009-11-26.md) — Hard facts about comment spam
 - [2010-01-01](2010-01-01.md) — Matt Cutts video: How are spam reports prioritized?
 - [2010-01-26](2010-01-26.md) — Protect your site from spammers with reCAPTCHA
-- [2010-03-01](2010-03-01.md) — Is your site hacked?  New Message Center notifications for hacking and abuse
-- [2010-05-05](2010-05-05.md) — Call for webspam reports in Thai, Indonesian, Romanian, Czech and Farsi
+- [2010-03-01](2010-03-01.md) — Is your site hacked?  New Message Center notifications for hacking
+  and abuse
+- [2010-05-05](2010-05-05.md) — Call for webspam reports in Thai, Indonesian, Romanian, Czech and
+  Farsi
 - [2010-11-04](2010-11-04.md) — How to help Google identify web spam
 - [2010-11-08](2010-11-08.md) — A Chrome extension for reporting webspam
 - [2011-02-01](2011-02-01.md) — Google Search and search engine spam
-- [2011-08-01](2011-08-01.md) — Matt Cutts video: Can I flag spammy links to my site that I didn't create?
+- [2011-08-01](2011-08-01.md) — Matt Cutts video: Can I flag spammy links to my site that I didn't
+  create?
 - [2011-08-08](2011-08-08.md) — A new, improved form for reporting webspam
-- [2011-11-01](2011-11-01.md) — Is SEO Spam?; Matt Cutts video: Search Engine Optimization (SEO) and Spam
+- [2011-11-01](2011-11-01.md) — Is SEO Spam?; Matt Cutts video: Search Engine Optimization (SEO) and
+  Spam
 - [2013-08-08](2013-08-08.md) — View manual webspam actions in Webmaster Tools
 - [2015-10-06](2015-10-06.md) — An update on how we tackle hacked spam
 - [2016-05-02](2016-05-02.md) — How we fought webspam in 2015
@@ -34,7 +38,8 @@ One file per day, oldest first. Backfilled from archive.org, kept current by the
 - [2020-06-09](2020-06-09.md) — How we fought Search spam on Google - Webspam Report 2019
 - [2020-07-03](2020-07-03.md) — How spam reports are used at Google
 - [2021-04-29](2021-04-29.md) — How we fought Search spam on Google in 2020
-- [2021-05-26](2021-05-26.md) — Prevent portions of your site from being abused by spam; How we worked with you in 2020 towards a safe search experience, without spam
+- [2021-05-26](2021-05-26.md) — Prevent portions of your site from being abused by spam; How we
+  worked with you in 2020 towards a safe search experience, without spam
 - [2021-07-26](2021-07-26.md) — A reminder on qualifying links and our link spam update
 - [2022-04-21](2022-04-21.md) — How we fought Search spam on Google in 2021
 - [2022-11-29](2022-11-29.md) — Text diff: 20221028 -> 20221129
@@ -45,7 +50,8 @@ One file per day, oldest first. Backfilled from archive.org, kept current by the
 - [2023-10-04](2023-10-04.md) — October 2023 Spam Update
 - [2023-12-26](2023-12-26.md) — Text diff: 20231129 -> 20231226
 - [2024-01-30](2024-01-30.md) — Text diff: 20231226 -> 20240130
-- [2024-03-05](2024-03-05.md) — What web creators should know about our March 2024 core update and new spam policies
+- [2024-03-05](2024-03-05.md) — What web creators should know about our March 2024 core update and
+  new spam policies
 - [2024-03-31](2024-03-31.md) — Text diff: 20240229 -> 20240331
 - [2024-06-30](2024-06-30.md) — Text diff: 20240531 -> 20240630
 - [2024-08-31](2024-08-31.md) — Text diff: 20240723 -> 20240831

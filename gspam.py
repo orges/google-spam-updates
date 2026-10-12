@@ -423,9 +423,10 @@ def index_md(root, extra):
            "One file per day, oldest first. Backfilled from archive.org, "
            "kept current by the scheduled run.", ""]
     for date in sorted(days):
-        titles = re.findall(r"^## (.+)$", days[date], re.M)
-        out.append("- [{}]({}.md) — {}".format(
-            date, date, "; ".join(dict.fromkeys(titles)) or "no content change"))
+        titles = "; ".join(dict.fromkeys(re.findall(r"^## (.+)$", days[date], re.M)))
+        out += textwrap.wrap("- [{}]({}.md) — {}".format(date, date, titles),
+                             width=WRAP, subsequent_indent="  ",
+                             break_long_words=False, break_on_hyphens=False)
     return "\n".join(out) + "\n"
 
 
