@@ -37,14 +37,34 @@ One file per day, oldest first. Backfilled from archive.org, kept current by the
 - [2021-05-26](2021-05-26.md) — Prevent portions of your site from being abused by spam; How we worked with you in 2020 towards a safe search experience, without spam
 - [2021-07-26](2021-07-26.md) — A reminder on qualifying links and our link spam update
 - [2022-04-21](2022-04-21.md) — How we fought Search spam on Google in 2021
+- [2022-11-29](2022-11-29.md) — Text diff: 20221028 -> 20221129
 - [2022-12-14](2022-12-14.md) — December 2022 link spam update releasing for Google Search
+- [2023-02-28](2023-02-28.md) — Text diff: 20230130 -> 20230228
 - [2023-04-11](2023-04-11.md) — How we fought spam on Google Search in 2022
+- [2023-09-28](2023-09-28.md) — Text diff: 20230828 -> 20230928
 - [2023-10-04](2023-10-04.md) — October 2023 Spam Update
+- [2023-12-26](2023-12-26.md) — Text diff: 20231129 -> 20231226
+- [2024-01-30](2024-01-30.md) — Text diff: 20231226 -> 20240130
 - [2024-03-05](2024-03-05.md) — What web creators should know about our March 2024 core update and new spam policies
+- [2024-03-31](2024-03-31.md) — Text diff: 20240229 -> 20240331
+- [2024-06-30](2024-06-30.md) — Text diff: 20240531 -> 20240630
+- [2024-08-31](2024-08-31.md) — Text diff: 20240723 -> 20240831
+- [2024-09-28](2024-09-28.md) — Text diff: 20240831 -> 20240928
 - [2024-11-19](2024-11-19.md) — Updating our site reputation abuse policy
+- [2024-11-28](2024-11-28.md) — Text diff: 20241017 -> 20241128
+- [2024-12-28](2024-12-28.md) — Text diff: 20241128 -> 20241228
+- [2025-01-30](2025-01-30.md) — Text diff: 20241228 -> 20250130
+- [2025-03-29](2025-03-29.md) — Text diff: 20250227 -> 20250329
+- [2025-05-30](2025-05-30.md) — Text diff: 20250428 -> 20250530
+- [2025-06-28](2025-06-28.md) — Text diff: 20250530 -> 20250628
+- [2025-10-31](2025-10-31.md) — Text diff: 20250924 -> 20251031
+- [2025-12-28](2025-12-28.md) — Text diff: 20251130 -> 20251228
 - [2026-03-24](2026-03-24.md) — March 2026 spam update
 - [2026-04-13](2026-04-13.md) — Introducing a new spam policy for "back button hijacking"
+- [2026-04-30](2026-04-30.md) — Text diff: 20260327 -> 20260430
+- [2026-05-30](2026-05-30.md) — Text diff: 20260430 -> 20260530
 - [2026-06-24](2026-06-24.md) — June 2026 spam update
 - [2026-08-18](2026-08-18.md) — August 2026 spam update
 - [2026-08-28](2026-08-28.md) — Update to the Site Reputation Policy
+- [2026-08-30](2026-08-30.md) — Text diff: 20260822 -> 20260830
 - [2026-09-24](2026-09-24.md) — September 2026 spam update
