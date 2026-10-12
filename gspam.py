@@ -38,7 +38,7 @@ SPAM = re.compile(r"spam", re.I)
 JUNK = re.compile(r"^(Home|Search Central|Documentation|Send feedback|Previous|Next"
                   r"|Was this helpful\??|Last updated .*)$", re.I)
 BLOCK = re.compile(r"</?(p|li|h[1-6]|tr|dt|dd|blockquote|pre|ul|ol|table|div)\b[^>]*>", re.I)
-HEADING = re.compile(r"</?h[1-6]\b[^>]*>", re.I)
+HEADING = re.compile(r"<h[1-6]\b[^>]*>", re.I)      # opening tag only
 ENTITIES = {"&amp;": "&", "&nbsp;": " ", "&#39;": "'", "&quot;": '"',
             "&lt;": "<", "&gt;": ">", "&rsquo;": "'", "&hellip;": "..."}
 
@@ -99,10 +99,12 @@ def doc_text(url=DOC):
         t = t.replace(ent, char)
     lines = []
     for chunk in t.split("\x00"):
-        for piece in chunk.split("\x01"):
+        # text before a heading marker is body copy; only the piece right after it is the title
+        pieces = chunk.split("\x01")
+        for i, piece in enumerate(pieces):
             piece = re.sub(r"\s+", " ", piece).strip()
             if piece and not JUNK.match(piece):
-                lines.append("## " + piece)
+                lines.append(("## " + piece) if i else piece)
     return "\n".join(ln for ln in lines if ln)
 
 
