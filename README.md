@@ -10,16 +10,19 @@ Pulls two public sources on a schedule and commits the result:
 | --- | --- |
 | [Status Dashboard](https://status.search.google.com/products/rGEU1u87FJnkP6W2GwMi/history)<br>incidents feed | Spam update announcements + rollout start/finish |
 | [Spam policies](https://developers.google.com/search/docs/essentials/spam-policies)<br>for Google web search | Any edit to the policy doc, as a paragraph-level diff |
+| [Search Central blog](https://developers.google.com/search/blog) | Posts announcing new spam policies, full text included |
 
 - [`changelog/`](changelog) — one file per day, `YYYY-MM-DD.md`, indexed in
   [`changelog/README.md`](changelog/README.md). Each entry has a fenced block per change:
-  announcement text as `+` lines, policy edits as a unified `diff`. History back to Oct 2022 is
-  rebuilt from archive.org snapshots of the policy doc.
+  announcement text as `+` lines, policy edits as a unified `diff`, blog post bodies as `+`
+  lines. Policy history back to Oct 2022 is rebuilt from archive.org snapshots.
 - [`spam-policies.md`](spam-policies.md) — current snapshot of the policy doc.
 
 ## Limitations
 
 - Only spam updates are tracked; core and minor dashboard updates are ignored.
+- 13 older blog posts (mostly pre-2012, some non-English) publish no machine-readable date, so
+  their files fall back to the first of the month.
 - Policy diffs are paragraph-level, so a reworded paragraph shows as a `-`/`+` pair rather
   than a word-level diff.
 - Fenced lines are hard-wrapped at 100 columns; wrapped tails of a `+`/`-` line are indented
