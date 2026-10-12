@@ -16,21 +16,17 @@ Pulls two public sources on a schedule and commits the result:
 
 ## Running it
 
+`.github/workflows/update.yml` runs `gspam.py --state state.json --publish .` every 6 hours and commits when something changed. Trigger it by hand from the Actions tab, or locally:
+
 ```bash
 python3 gspam.py                 # print what changed since the last run
 python3 gspam.py --json          # machine-readable diff
 python3 gspam.py --watch 900     # poll every 15 min
-python3 gspam.py --publish .     # commit + push the markdown (cron uses this)
+python3 gspam.py --publish .     # commit + push the markdown
 python3 test_gspam.py            # self-check
 ```
 
-State lives in one JSON snapshot (`~/.local/state/gspam.json`). Commits happen only when something actually changed.
-
-Scheduled run:
-
-```cron
-*/30 * * * * /home/orges/gspam/gspam.py --publish /home/orges/gspam
-```
+`state.json` (committed) is the snapshot; local runs default to `~/.local/state/gspam.json` instead. Commits happen only when something actually changed.
 
 ## Limitations
 

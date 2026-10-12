@@ -1,0 +1,13 @@
+name: update
+on:
+  schedule:
+    - cron: "17 */6 * * *"   # off the top of the hour, GitHub's Actions minute stampede
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 gspam.py --state state.json --publish .

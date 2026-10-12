@@ -185,13 +185,13 @@ def run(args):
             print("DOC  " + DOC)
             print(dd)
 
-    if args.publish:
-        touched = publish(args.publish, render(seen), message(lines, dd))
-        print("gspam: published {}".format(", ".join(touched) or "nothing new"))
-
     os.makedirs(os.path.dirname(args.state) or ".", exist_ok=True)
     with open(args.state, "w") as fh:
         json.dump(seen, fh, indent=1)
+
+    if args.publish:
+        touched = publish(args.publish, render(seen), message(lines, dd))
+        print("gspam: published {}".format(", ".join(touched) or "nothing new"))
 
 
 def main():
