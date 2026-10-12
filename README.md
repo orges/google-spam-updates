@@ -10,7 +10,7 @@ Pulls two public sources on a schedule and commits the result:
 | --- | --- |
 | [Status Dashboard](https://status.search.google.com/products/rGEU1u87FJnkP6W2GwMi/history)<br>incidents feed | Spam update announcements + rollout start/finish |
 | [Spam policies](https://developers.google.com/search/docs/essentials/spam-policies)<br>for Google web search | Any edit to the policy doc, as a paragraph-level diff |
-| [Search Central blog](https://developers.google.com/search/blog) | Posts announcing new spam policies, full text included |
+| [Search Central blog](https://developers.google.com/search/blog)<br>post index | Posts announcing new spam policies, full text included |
 
 - [`changelog/`](changelog) — one file per day, `YYYY-MM-DD.md`, indexed in
   [`changelog/README.md`](changelog/README.md). Each entry has a fenced block per change:
@@ -39,7 +39,7 @@ python3 gspam.py                 # print what changed since the last run
 python3 gspam.py --json          # machine-readable diff
 python3 gspam.py --watch 900     # poll every 15 min
 python3 gspam.py --publish .     # commit + push the markdown
-python3 gspam.py --backfill 49   # rebuild changelog/ from N months of archive.org snapshots
+python3 gspam.py --backfill 49   # rebuild policy history from N months of archive.org
 python3 test_gspam.py            # self-check
 ```
 
