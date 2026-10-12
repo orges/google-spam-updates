@@ -230,10 +230,7 @@ def render(seen):
            "Auto-generated snapshot of <" + DOC + ">.", "",
            "Change history lives in [changelog/](changelog).", ""]
     for para in seen["doc"].split("\n"):
-        if para.startswith("## "):
-            out += ["", para]
-        else:
-            out += [""] + textwrap.wrap(para, width=WRAP)
+        out += [""] + textwrap.wrap(para, width=WRAP)
     return {"spam-policies.md": "\n".join(out) + "\n"}
 
 

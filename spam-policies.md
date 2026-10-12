@@ -452,7 +452,8 @@ There's no obligation to apply a noindex tag to content that is subject to a man
 the EEA and failure to do so isn't taken into account in ranking that content within the EEA. Nor is
 such failure considered an attempt to evade or circumvent this policy or a repeated violation.
 
-## A portion of my site was previously subject to manual action under this policy in the EEA. What happens now?
+## A portion of my site was previously subject to manual action under this policy in the EEA. What
+happens now?
 
 Google will lift all previous manual actions taken under this policy for pages appearing in search
 results for users in the EEA. This means that those pages will no longer be demoted or subject to
@@ -465,7 +466,8 @@ Our systems ensure that pages that were previously subject to a manual action un
 fairly and aren't disadvantaged. The fact that a page was previously subject to a manual action
 under this policy isn't used as a ranking signal when ranking that page.
 
-## What happens when a part of my site is categorized as separate from the main domain for being out of line with this policy?
+## What happens when a part of my site is categorized as separate from the main domain for being out
+of line with this policy?
 
 This categorization tells our systems that the presumption that we generally apply globally &mdash;
 which is that individual pages (including new pages) match the overall quality of other pages on the
