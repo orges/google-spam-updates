@@ -293,16 +293,25 @@ def cdx_timestamps():
 
 
 def backfill(months, root):
-    """Rebuild changelog/ from archive.org: last snapshot of each of the last N months."""
+    """Rebuild changelog/ from archive.org: month-end snapshots plus every
+    snapshot bracketing a known spam update date, so a policy change gets
+    attributed to the update it rode along with rather than to a month end."""
+    all_ts = cdx_timestamps()
+    cutoff = all_ts[-months * 31:] if months else all_ts
     picks = []
-    for ts in reversed(cdx_timestamps()):
+    for ts in reversed(cutoff):                 # last snapshot of each month
         if not picks or picks[-1][:6] != ts[:6]:
             picks.append(ts)
-        if len(picks) >= months:
-            break
-    picks.reverse()
-    print("backfill: {} archive snapshots, {} -> {}".format(
-        len(picks), picks[0][:8], picks[-1][:8]), flush=True)
+    anchor = {d for inc in fetch().values() for d in
+              ((inc.get("begin") or "")[:10], (inc.get("end") or "")[:10]) if d}
+    for date in sorted(anchor):
+        day = date.replace("-", "")
+        before = [t for t in all_ts if t[:8] <= day]
+        after = [t for t in all_ts if t[:8] >= day]
+        picks += [before[-1] if before else None, after[0] if after else None]
+    picks = sorted(set(t for t in picks if t))
+    print("backfill: {} snapshots over {} months, {} anchors, {} -> {}".format(
+        len(picks), months, len(anchor), picks[0][:8], picks[-1][:8]), flush=True)
 
     missing = fetch_snapshots(picks, gap=2)
     for attempt in range(2):          # archive.org throttles hard; cached hits are free
@@ -325,7 +334,9 @@ def backfill(months, root):
             dd = doc_diff(prev, text)
             md = entry_md(date, [archive_url(prev_ts), archive_url(ts)],
                           [("Text diff: {} -> {}".format(prev_ts[:8], ts[:8]), "diff", dd)])
-            entries_by_day[date] = entries_by_day.get(date, "") + md
+            entries_by_day.setdefault(date, "")
+            if md.strip() not in entries_by_day[date]:
+                entries_by_day[date] += md
             print("  {} +{}/-{}".format(date, *_counts(dd)), flush=True)
         prev, prev_ts = text, ts
     return append(root, entries_by_day)
