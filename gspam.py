@@ -20,6 +20,7 @@ import os
 import re
 import subprocess
 import sys
+import textwrap
 import time
 import urllib.error
 import urllib.parse
@@ -165,6 +166,22 @@ def load_state(path):
         return {}
 
 
+WRAP = 100
+
+
+def wrap_diff(dd, width=WRAP):
+    """Hard-wrap long diff lines to fit a code box; wrapped tails become context lines."""
+    out = []
+    for line in dd.splitlines():
+        if len(line) <= width or line.startswith(("@@", "--- ", "+++ ")):
+            out.append(line)
+            continue
+        chunks = textwrap.wrap(line[1:], width=width - 3) or [""]
+        out.append(line[:1] + chunks[0])
+        out += ["   " + c for c in chunks[1:]]
+    return "\n".join(out)
+
+
 def entry_md(title, sources, sections):
     """One changelog entry: title, source links, then fenced + / - blocks."""
     out = ["# " + title, ""]
@@ -172,6 +189,8 @@ def entry_md(title, sources, sections):
         out += ["Sources:"] + ["- " + s for s in sources] + [""]
     for head, lang, body in sections:
         if body.strip():
+            if lang == "diff":
+                body = wrap_diff(body)
             out += ["## " + head, "", "```" + lang, body.rstrip("\n"), "```", ""]
     return "\n".join(out) + "\n"
 

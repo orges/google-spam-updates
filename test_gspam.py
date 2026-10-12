@@ -4,7 +4,7 @@ import subprocess
 import tempfile
 
 from gspam import (append, changes, diff, doc_diff, entry_md, entries, index_md, message,
-                   publish, render)
+                   publish, render, wrap_diff)
 
 SNAP = {
     "abc": {
@@ -50,6 +50,14 @@ assert message([], doc_diff("a", "b")) == "gspam: spam policies +1/-1"
 
 md = entry_md("2026-09-24", ["https://x"], [("T", "diff", "-a\n+b"), ("skip", "diff", "  ")])
 assert md.startswith("# 2026-09-24\n") and "```diff\n-a\n+b\n```" in md and "skip" not in md
+
+LONG = "- " + " ".join(["spamword"] * 40)
+w = wrap_diff(LONG)
+assert max(len(ln) for ln in w.split("\n")) <= 100, max(len(ln) for ln in w.split("\n"))
+assert w.startswith("- ") and "\n   " in w            # marker kept, tails indented
+assert " ".join(w.split()) == LONG                     # no words lost or added
+assert wrap_diff("@@ -1,2 +1,2 @@\n- ok") == "@@ -1,2 +1,2 @@\n- ok"   # headers untouched
+assert wrap_diff("+ " + "x " * 80).split("\n")[0].startswith("+ ")
 
 e = entries(changes({}, SNAP), "", doc_date=None)
 key = "2026-09-24"
