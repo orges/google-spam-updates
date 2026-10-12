@@ -3,7 +3,7 @@ import os
 import subprocess
 import tempfile
 
-from gspam import diff, doc_diff, message, publish, render
+from gspam import append, changes, diff, doc_diff, entry_md, entries, message, publish, render
 
 SNAP = {
     "abc": {
@@ -15,8 +15,8 @@ SNAP = {
     }
 }
 
-assert diff({}, SNAP)[0].startswith("NEW")          # first run announces it
-assert diff({}, SNAP)[1] == "       Released the update."
+assert diff({}, SNAP)[0] == "NEW  September 2026 spam update  (2026-09-24)"
+assert changes({}, SNAP)[0]["date"] == "2026-09-24"
 assert diff(SNAP, SNAP) == []                       # unchanged -> silent
 
 rolled = copy.deepcopy(SNAP)
@@ -40,22 +40,43 @@ assert "-Try to game ranking." in d and "+A brand new policy." in d, d
 
 STATE = {"incidents": SNAP, "doc": DOC}
 md = render(STATE)
-assert "| Started | Update | Rollout | Status |" in md["CHANGELOG.md"]
-assert "September 2026 spam update" in md["CHANGELOG.md"]
 assert md["spam-policies.md"].endswith(DOC + "\n")
+assert "changelog" in md["spam-policies.md"]
 
 assert message([], "") == "gspam: refresh"
-assert message(["NEW  October 2026 spam update  (2026-10-01)"], "") \
-    == "gspam: October 2026 spam update"
+assert message(changes({}, SNAP), "") == "gspam: September 2026 spam update"
 assert message([], doc_diff("a", "b")) == "gspam: spam policies +1/-1"
+
+md = entry_md("2026-09-24", ["https://x"], [("T", "diff", "-a\n+b"), ("skip", "diff", "  ")])
+assert md.startswith("# 2026-09-24\n") and "```diff\n-a\n+b\n```" in md and "skip" not in md
+
+e = entries(changes({}, SNAP), "", doc_date=None)
+key = "2026-09-24"
+assert e[key].startswith("# 2026-09-24") and "+ Released the update." in e[key]
+same_day = entries(changes({}, SNAP) + [dict(changes({}, SNAP)[0], date="2026-10-08", kind="done",
+                                             text="rollout finished 2026-10-08")], "", "2026-10-08")
+assert sorted(same_day) == ["2026-09-24", "2026-10-08"]   # two dates -> two files
+assert same_day["2026-10-08"].startswith("# 2026-10-08")
+
+with tempfile.TemporaryDirectory() as tmp:
+    files = append(tmp, e)                          # append computes; publish writes
+    assert set(files) == {"changelog/2026-09-24.md"}
+    assert set(append(tmp, e)) == set(files)         # content still missing on disk
+    publish(tmp, files, "x")                        # not a git repo -> write only, no commit
+    assert append(tmp, e) == {}                     # now on disk -> nothing to write
+    both = append(tmp, entries([], "-old\n+new", "2026-10-08"))
+    assert set(both) == {"changelog/2026-10-08.md"}
+    assert "-old\n+new" in both["changelog/2026-10-08.md"]
 
 with tempfile.TemporaryDirectory() as tmp:           # publish: commit once, then stay silent
     remote = os.path.join(tmp, "remote.git")
     subprocess.run(["git", "init", "-q", "--bare", remote], check=True)
     subprocess.run(["git", "init", "-q", tmp], check=True)
     subprocess.run(["git", "-C", tmp, "remote", "add", "origin", remote], check=True)
-    assert publish(tmp, md, "seed") == ["CHANGELOG.md", "spam-policies.md"]
-    assert publish(tmp, md, "again") == []           # no diff -> no commit
+    files = dict(render(STATE))
+    files.update(append(tmp, e))
+    assert sorted(publish(tmp, files, "seed")) == ["changelog/2026-09-24.md", "spam-policies.md"]
+    assert publish(tmp, files, "again") == []       # no diff -> no commit
     later = {"incidents": SNAP, "doc": DOC + "\nNew line."}
     assert publish(tmp, render(later), "doc change") == ["spam-policies.md"]
     log = subprocess.run(["git", "-C", tmp, "log", "--format=%s"],
