@@ -19,6 +19,10 @@ One file per day, oldest first. Backfilled from archive.org, kept current by the
 - [2025-06-28](2025-06-28.md) — Text diff: 20250530 -> 20250628
 - [2025-10-31](2025-10-31.md) — Text diff: 20250924 -> 20251031
 - [2025-12-28](2025-12-28.md) — Text diff: 20251130 -> 20251228
+- [2026-03-24](2026-03-24.md) — March 2026 spam update
 - [2026-04-30](2026-04-30.md) — Text diff: 20260327 -> 20260430
 - [2026-05-30](2026-05-30.md) — Text diff: 20260430 -> 20260530
+- [2026-06-24](2026-06-24.md) — June 2026 spam update
+- [2026-08-18](2026-08-18.md) — August 2026 spam update
 - [2026-08-30](2026-08-30.md) — Text diff: 20260730 -> 20260830
+- [2026-09-24](2026-09-24.md) — September 2026 spam update
