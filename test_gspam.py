@@ -33,16 +33,20 @@ later = copy.deepcopy(rolled)
 later["def"] = dict(SNAP["abc"], desc="October 2026 spam update")
 assert diff(rolled, later)[0].startswith("NEW  October")
 
-DOC = "Scaled content abuse\nTry to game ranking."
+DOC = "## Scaled content abuse\nTry to game ranking."
 assert doc_diff(DOC, DOC) == ""                     # unchanged -> silent
-d = doc_diff(DOC, "Scaled content abuse\nA brand new policy.")
+d = doc_diff(DOC, "## Scaled content abuse\nA brand new policy.")
 assert d.splitlines()[0] == "--- old" and d.splitlines()[1] == "+++ new", d
 assert "-Try to game ranking." in d and "+A brand new policy." in d, d
 
+DOC = "## Scaled content abuse\nTry to game ranking."
 STATE = {"incidents": SNAP, "doc": DOC}
 md = render(STATE)
-assert md["spam-policies.md"].endswith(DOC + "\n")
-assert "changelog" in md["spam-policies.md"]
+pol = md["spam-policies.md"]
+assert "changelog" in pol and pol.endswith("\n")
+assert "\n## Scaled content abuse\n" in pol                          # heading kept
+assert "Try to game ranking." in pol
+assert all(len(ln) <= 100 for ln in pol.split("\n")), max(len(ln) for ln in pol.split("\n"))
 
 assert message([], "") == "gspam: refresh"
 assert message(changes({}, SNAP), "") == "gspam: September 2026 spam update"

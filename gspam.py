@@ -38,6 +38,7 @@ SPAM = re.compile(r"spam", re.I)
 JUNK = re.compile(r"^(Home|Search Central|Documentation|Send feedback|Previous|Next"
                   r"|Was this helpful\??|Last updated .*)$", re.I)
 BLOCK = re.compile(r"</?(p|li|h[1-6]|tr|dt|dd|blockquote|pre|ul|ol|table|div)\b[^>]*>", re.I)
+HEADING = re.compile(r"</?h[1-6]\b[^>]*>", re.I)
 ENTITIES = {"&amp;": "&", "&nbsp;": " ", "&#39;": "'", "&quot;": '"',
             "&lt;": "<", "&gt;": ">", "&rsquo;": "'", "&hellip;": "..."}
 
@@ -90,13 +91,19 @@ def doc_text(url=DOC):
     html = get(url)
     art = re.search(r"<article.*?</article>", html, re.S)
     t = re.sub(r"<(script|style|svg)\b.*?</\1>", "", art.group(0) if art else html, flags=re.S)
+    t = HEADING.sub("\x01", t)                      # mark headings, keep their level
     t = BLOCK.sub("\x00", t)                        # block tags = paragraph breaks
     t = re.sub(r"<[^>]+>", " ", t)
     t = t.replace("\n", " ")                        # Google hard-wraps inside <p>
     for ent, char in ENTITIES.items():
         t = t.replace(ent, char)
-    lines = [re.sub(r"\s+", " ", ln).strip() for ln in t.split("\x00")]
-    return "\n".join(ln for ln in lines if ln and not JUNK.match(ln))
+    lines = []
+    for chunk in t.split("\x00"):
+        for piece in chunk.split("\x01"):
+            piece = re.sub(r"\s+", " ", piece).strip()
+            if piece and not JUNK.match(piece):
+                lines.append("## " + piece)
+    return "\n".join(ln for ln in lines if ln)
 
 
 def doc_diff(old, new):
@@ -217,11 +224,15 @@ def append(root, entries):
 
 def render(seen):
     """{repo path: markdown content} for the always-published files."""
-    policies = ["# Google Search spam policies", "",
-                "Auto-generated snapshot of <" + DOC + ">.", "",
-                "Change history lives in [changelog/](changelog).", "",
-                seen["doc"], ""]
-    return {"spam-policies.md": "\n".join(policies)}
+    out = ["# Google Search spam policies", "",
+           "Auto-generated snapshot of <" + DOC + ">.", "",
+           "Change history lives in [changelog/](changelog).", ""]
+    for para in seen["doc"].split("\n"):
+        if para.startswith("## "):
+            out += ["", para]
+        else:
+            out += [""] + textwrap.wrap(para, width=WRAP)
+    return {"spam-policies.md": "\n".join(out) + "\n"}
 
 
 def publish(root, files, message):
